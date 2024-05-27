@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Mako } from "next/font/google";
 import "./globals.css";
+import Providers from "@/redux/LinkSlice/Provider";
 
 const mako = Mako({ weight: '400', subsets: ["latin"] });
 
@@ -16,7 +17,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={"bg-arrow-bg"}>{children}</body>
+      <body className={"bg-arrow-bg"}>
+        <Providers>
+          {children}
+        </Providers>
+        </body>
     </html>
   );
 }
