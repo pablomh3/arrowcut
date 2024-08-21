@@ -1,31 +1,56 @@
 "use client";
 
-import Links from "@/components/links/Links";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { addLink } from "@/redux/LinkSlice/linkSlice";
+import { Button } from "./components/ui/button";
+import { Input } from "./components/ui/input";
 import Image from "next/image";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import Links from "./components/links/Links";
+import { useDispatch } from "react-redux";
+import { addLinks } from "@/redux/LinkSlice/linkSlice";
 
 export default function Home() {
   const [link, setLink] = useState("");
-  const links = useSelector((state: any) => state.links);
   const dispatch = useDispatch();
 
-  const handleClick = (e: any) => {
+  const handleClick = async (e: any) => {
     e.preventDefault();
 
     if (!link) return;
 
     const newLink = {
-      id: Date.now(),
-      link: link,
-      shorterURL: link,
+      url: link,
     };
 
-    dispatch(addLink(newLink));
-    setLink("");
+    try {
+      const response = await fetch("http://localhost:3000/api/urls/new", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newLink),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add link");
+      }
+
+      const data = await response.json();
+      console.log("Server response:", data); // Verifica aquí que el _id esté presente
+
+      dispatch(
+        addLinks([
+          {
+            id: data._id, // Asegúrate de usar data._id y no data.id si estás usando MongoDB
+            url: data.url,
+            shortUrl: data.shortUrl,
+          },
+        ])
+      );
+
+      setLink(""); // Limpiar el input después de agregar el enlace
+    } catch (error) {
+      console.error("Error adding link:", error);
+    }
   };
 
   return (
@@ -34,7 +59,10 @@ export default function Home() {
         <Image src={"/images/logo.png"} alt="logo" width={300} height={300} />
         <h1 className="text-arrow-bg font-title text-[76px]">ARROW CUT</h1>
         <div className="flex flex-col gap-5 justify-center items-center">
-          <label htmlFor="link" className="text-arrow-label font-label text-[26px]">
+          <label
+            htmlFor="link"
+            className="text-arrow-label font-label text-[26px]"
+          >
             Enter a link below and receive a shorter one for free
           </label>
           <Input
@@ -53,7 +81,7 @@ export default function Home() {
           </Button>
         </div>
 
-        {links.length > 0 && <Links />}
+        <Links />
       </div>
     </>
   );

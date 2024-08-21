@@ -1,24 +1,29 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState : any = [
-]
+interface LinkState {
+  id: string;
+  url: string;
+  shortUrl: string;
+}
 
-const linkSlice = createSlice ({
-    name: "links",
-    initialState,
-    reducers: { 
-        addLink: (state : any, action: PayloadAction <any>) => {
-            const { link, shorterURL, id } = action.payload;
-            state.push({ link, shorterURL, id});
+const initialState: LinkState[] = [];
 
-        },
-        deleteLink: (state : any, action: PayloadAction <any>) =>{
-            const linkId = action.payload;
-            return state.filter((link : any) => link.id !== linkId)
-        }
+const linkSlice = createSlice({
+  name: "links",
+  initialState,
+  reducers: {
+    addLinks: (state, action: PayloadAction<LinkState[]>) => {
+      const existingIds = state.map((link) => link.id);
+      const newLinks = action.payload.filter(
+        (link) => !existingIds.includes(link.id)
+      );
+      return [...state, ...newLinks];
+    },
+    deleteLink: (state, action: PayloadAction<string>) => {
+      return state.filter((link) => link.id !== action.payload);
+    },
+  },
+});
 
-    }
-})
-
-export const { addLink, deleteLink } = linkSlice.actions;
+export const { addLinks, deleteLink } = linkSlice.actions;
 export default linkSlice.reducer;
