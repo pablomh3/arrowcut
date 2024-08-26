@@ -66,9 +66,9 @@ const Links = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col gap-5">
       {links.map((link: LinkData) => (
-        <div className="flex flex-col gap-[10px] justify-center items-center w-[65%] rounded-[20px] mx-[auto] mt-[60px] bg-arrow-bg p-[20px]">
+        <div className="flex flex-col gap-[10px] justify-center items-center w-[65%] rounded-[20px] mx-[auto]  bg-arrow-bg p-[20px]">
           <div className="flex flex-row gap-[10px] justify-center items-center">
             <h3>
               {link.url} <strong> is now =</strong>
